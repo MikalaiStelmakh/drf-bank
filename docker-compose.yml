@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  web:
+    build: ./src
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src/app:/app
+    command: python manage.py runserver 0.0.0.0:8000
+    depends_on:
+      - db
+    env_file: .env
+    environment:
+      - DEBUG=TRUE
+
+  db:
+    image: postgres:14-alpine
+    environment:
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - 5432:5432
+volumes:
+  postgres_data:
