@@ -27,6 +27,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'users.apps.UsersConfig',
+
     'rest_framework',
     'rest_framework.authtoken',
 
@@ -122,6 +124,8 @@ USE_I18N = True
 USE_TZ = True
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+AUTH_USER_MODEL = 'users.CustomUser'
 
 SITE_ID = 1
 
