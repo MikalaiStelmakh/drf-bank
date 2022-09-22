@@ -1,3 +1,5 @@
+# Docker compose configuration for development.
+
 version: '3.8'
 services:
   web:
