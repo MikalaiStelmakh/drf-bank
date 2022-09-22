@@ -16,7 +16,7 @@ DEBUG = os.getenv('DEBUG', 'TRUE') == 'TRUE'
 
 # Should be a single string of hosts with a space between each.
 # For example: 'ALLOWED_HOSTS=localhost 127.0.0.1 [::1]'
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(" ")
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(" ")
 
 
 # Application definition
