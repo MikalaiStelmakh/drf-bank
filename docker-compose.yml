@@ -9,17 +9,14 @@ services:
     command: python manage.py runserver 0.0.0.0:8000
     depends_on:
       - db
-    env_file: .env
-    environment:
-      - DEBUG=TRUE
+    env_file: .env.dev
 
   db:
     image: postgres:14-alpine
-    environment:
-      - POSTGRES_PASSWORD=password
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     ports:
       - 5432:5432
+    env_file: .env.dev
 volumes:
   postgres_data:
