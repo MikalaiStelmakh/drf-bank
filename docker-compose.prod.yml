@@ -6,9 +6,7 @@ services:
     build: ./src
     ports:
       - "8000:8000"
-    volumes:
-      - ./src/app:/app
-    command: python manage.py runserver 0.0.0.0:8000
+    command: gunicorn app.wsgi --bind 0.0.0.0:8000
     depends_on:
       - db
     env_file: .env.prod
