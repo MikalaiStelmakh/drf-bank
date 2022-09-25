@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import Customer, Account, Replenishment, Transfer
 
 
-class CustomSerializer(serializers.ModelSerializer):
+class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
         fields = ('id', 'fname', 'lname', 'city', )
