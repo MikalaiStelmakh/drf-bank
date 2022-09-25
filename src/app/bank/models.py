@@ -6,8 +6,8 @@ from django.conf import settings
 class Customer(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
-    fname = models.CharField(max_length=255)
-    lname = models.CharField(max_length=255)
+    fname = models.CharField(verbose_name="First name", max_length=255)
+    lname = models.CharField(verbose_name="Second name", max_length=255)
     city = models.CharField(max_length=255)
 
     user = models.OneToOneField(
@@ -52,7 +52,7 @@ class Replenishment(models.Model):
         related_name="replenishments"
     )
 
-    date_replenished = models.DateTimeField(auto_now_add=True)
+    time_replenished = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return (
@@ -81,7 +81,7 @@ class Transfer(models.Model):
         decimal_places=2
     )
 
-    date_transfered = models.DateTimeField(auto_now_add=True)
+    time_transfered = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return (
