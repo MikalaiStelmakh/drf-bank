@@ -1,21 +1,38 @@
-from rest_framework import serializers
+from rest_framework import serializers, exceptions as rest_exceptions
+
 from .models import Customer, Account, Replenishment, Transfer
+
+from .services import make_replenishment
 
 
 class CustomerSerializer(serializers.ModelSerializer):
+    date_created = serializers.SerializerMethodField()
+
     class Meta:
         model = Customer
-        fields = ('id', 'fname', 'lname', 'city', )
+        fields = ('id', 'date_created', 'fname', 'lname', 'city', )
         read_only_fields = ('id', )
+
+    def create(self, validated_data):
+        # override standard method to create customer using put method
+        validated_data['user_id'] = self.context['request'].user.id
+        return super(CustomerSerializer, self).create(validated_data)
+
+    def get_date_created(self, obj):
+        # get date created as read only field
+        return obj.user.date_joined.date()
 
 
 class AccountSerializer(serializers.ModelSerializer):
-    actions = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    replenishments = serializers.PrimaryKeyRelatedField(
+        many=True,
+        read_only=True
+    )
 
     class Meta:
         model = Account
-        fields = ('id', 'balance', 'actions', )
-        read_only_fields = ('id', 'balance', 'actions', )
+        fields = ('id', 'balance', 'replenishments', )
+        read_only_fields = ('id', 'balance', 'replenishments', )
 
 
 class AccountOwnerForeignKey(serializers.PrimaryKeyRelatedField):
@@ -29,9 +46,19 @@ class ReplenishmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Replenishment
-        fields = ('id', 'amount', 'account')
-        # TODO: add replanishment date to
-        read_only_fields = ('id', )
+        fields = ('id', 'time_replenished', 'amount', 'account')
+        read_only_fields = ('id', 'time_replenished', )
+
+    def create(self, validated_data):
+        make_replenishment(**validated_data)
+        return super().create(validated_data)
+
+    def validate_amount(self, value):
+        if value <= 0:
+            raise rest_exceptions.ValidationError(
+                "Only positive amout of money can be provided."
+            )
+        return value
 
 
 class TransferSerializer(serializers.ModelSerializer):
@@ -39,5 +66,11 @@ class TransferSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Transfer
-        fields = ('id', 'from_account', 'to_account', 'amount', )
-        read_only_fields = ('id', )
+        fields = (
+            'id',
+            'time_transfered',
+            'from_account',
+            'to_account',
+            'amount',
+        )
+        read_only_fields = ('id', 'time_transfered', )
