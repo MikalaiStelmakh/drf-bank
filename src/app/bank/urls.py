@@ -3,6 +3,8 @@ from django.urls import path, include
 from . import views
 
 
+app_name = 'bank'
+
 router = DefaultRouter()
 
 router.register('account', views.AccountView)
