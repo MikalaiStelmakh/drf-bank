@@ -56,7 +56,7 @@ class Replenishment(models.Model):
 
     def __str__(self):
         return (
-            f'{self.date_replenished}: '
+            f'{self.time_replenished}: '
             f'Account {self.account.id} of {self.account.user.username} '
             f'was replenished by {self.amount}')
 
@@ -85,6 +85,6 @@ class Transfer(models.Model):
 
     def __str__(self):
         return (
-            f'{self.date_transfered}: Transfer '
+            f'{self.time_transfered}: Transfer '
             f'from account {self.from_account.id} '
             f'to account {self.to_account.id}')
