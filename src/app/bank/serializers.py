@@ -2,7 +2,7 @@ from rest_framework import serializers, exceptions as rest_exceptions
 
 from .models import Customer, Account, Replenishment, Transfer
 
-from .services import make_replenishment
+from .services import make_replenishment, make_transfer
 
 
 class CustomerSerializer(serializers.ModelSerializer):
@@ -56,7 +56,7 @@ class ReplenishmentSerializer(serializers.ModelSerializer):
     def validate_amount(self, value):
         if value <= 0:
             raise rest_exceptions.ValidationError(
-                "Only positive amout of money can be provided."
+                "Only positive amount of money can be provided."
             )
         return value
 
@@ -74,3 +74,25 @@ class TransferSerializer(serializers.ModelSerializer):
             'amount',
         )
         read_only_fields = ('id', 'time_transfered', )
+
+    def create(self, validated_data):
+        make_transfer(**validated_data)
+        return super().create(validated_data)
+
+    def validate_amount(self, value):
+        if value <= 0:
+            raise rest_exceptions.ValidationError(
+                "Only positive amount of money can be provided."
+            )
+        return value
+
+    def validate(self, attrs):
+        if attrs['from_account'] == attrs['to_account']:
+            raise rest_exceptions.ValidationError(
+                {"to_account": "Choose another account."}
+            )
+        if attrs['amount'] > attrs['from_account'].balance:
+            raise rest_exceptions.ValidationError(
+                {"amount": "Not enough money."}
+            )
+        return attrs
