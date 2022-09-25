@@ -7,6 +7,7 @@ router = DefaultRouter()
 
 router.register('account', views.AccountView)
 router.register('replenishment', views.ReplenishmentView)
+router.register('transfer', views.TransferView)
 
 
 urlpatterns = [
