@@ -1,0 +1,11 @@
+name: test_Django
+on: [pull_request, push]
+jobs:
+  test_project:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install docker-compose
+        run: pip install docker-compose
+      - name: Run Tests
+        run: make test
