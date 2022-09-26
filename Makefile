@@ -6,7 +6,9 @@ make_migrations:
 migrate:
 	docker-compose run --rm web sh -c "python manage.py migrate"
 test:
-	docker-compose run --rm web sh -c "python manage.py test && flake8"
+	docker-compose run --rm web sh -c "python manage.py test"
+flake8:
+	docker-compose run --rm web sh -c "flake8"
 super:
 	docker-compose run --rm web sh -c "python manage.py createsuperuser"
 shell:
