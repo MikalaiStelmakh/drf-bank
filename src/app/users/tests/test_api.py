@@ -106,6 +106,3 @@ class UserApiTest(TestCase):
 
         self.assertNotIn('key', res.data)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-
-
-
