@@ -31,8 +31,8 @@ class AccountSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Account
-        fields = ('id', 'balance', 'replenishments', )
-        read_only_fields = ('id', 'balance', 'replenishments', )
+        fields = ('id', 'created_at', 'balance', 'replenishments', )
+        read_only_fields = ('id', 'created_at', 'balance', 'replenishments', )
 
 
 class AccountOwnerForeignKey(serializers.PrimaryKeyRelatedField):
@@ -46,8 +46,8 @@ class ReplenishmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Replenishment
-        fields = ('id', 'time_replenished', 'amount', 'account')
-        read_only_fields = ('id', 'time_replenished', )
+        fields = ('id', 'created_at', 'amount', 'account')
+        read_only_fields = ('id', 'created_at', )
 
     def create(self, validated_data):
         make_replenishment(**validated_data)
@@ -68,12 +68,12 @@ class TransferSerializer(serializers.ModelSerializer):
         model = Transfer
         fields = (
             'id',
-            'time_transfered',
+            'created_at',
             'from_account',
             'to_account',
             'amount',
         )
-        read_only_fields = ('id', 'time_transfered', )
+        read_only_fields = ('id', 'created_at', )
 
     def create(self, validated_data):
         make_transfer(**validated_data)
