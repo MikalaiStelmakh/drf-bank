@@ -1,11 +1,23 @@
+from django.utils import timezone
 import uuid
 from django.db import models
 from django.conf import settings
 
 
-class Customer(models.Model):
+class BaseModel(models.Model):
+    """
+    Abstract base model that provides uuid primary key
+    and created_at timestamp.
+    """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
+    created_at = models.DateTimeField(db_index=True, default=timezone.now)
+
+    class Meta:
+        abstract = True
+
+
+class Customer(BaseModel):
     fname = models.CharField(verbose_name="First name", max_length=255)
     lname = models.CharField(verbose_name="Second name", max_length=255)
     city = models.CharField(max_length=255)
@@ -19,9 +31,7 @@ class Customer(models.Model):
         return f'{self.fname} {self.lname}'
 
 
-class Account(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-
+class Account(BaseModel):
     balance = models.DecimalField(
 
         default=0,
@@ -38,9 +48,7 @@ class Account(models.Model):
         return f'Account {self.id} of {self.user.username}'
 
 
-class Replenishment(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-
+class Replenishment(BaseModel):
     amount = models.DecimalField(
         max_digits=10,
         decimal_places=2
@@ -52,18 +60,14 @@ class Replenishment(models.Model):
         related_name="replenishments"
     )
 
-    time_replenished = models.DateTimeField(auto_now_add=True)
-
     def __str__(self):
         return (
-            f'{self.time_replenished}: '
+            f'{self.created_at}: '
             f'Account {self.account.id} of {self.account.user.username} '
             f'was replenished by {self.amount}')
 
 
-class Transfer(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-
+class Transfer(BaseModel):
     from_account = models.ForeignKey(
         Account,
         on_delete=models.CASCADE,
@@ -81,11 +85,9 @@ class Transfer(models.Model):
         decimal_places=2
     )
 
-    time_transfered = models.DateTimeField(auto_now_add=True)
-
     def __str__(self):
         return (
-            f'{self.time_transfered}: Transfer '
+            f'{self.created_at}: Transfer '
             f'from account {self.from_account.id} '
             f'to account {self.to_account.id} '
             f'for {self.amount}')
