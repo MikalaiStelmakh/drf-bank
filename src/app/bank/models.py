@@ -8,7 +8,7 @@ from django.db.models.query import Q, F
 class BaseModel(models.Model):
     """
     Abstract base model that provides uuid primary key
-    and created_at timestamp.
+    and created_at field.
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
@@ -19,6 +19,12 @@ class BaseModel(models.Model):
 
 
 class Customer(BaseModel):
+    """
+    Model used for user description.
+
+    Relations:
+        - Every user has one customer model related to it.
+    """
     fname = models.CharField(verbose_name="First name", max_length=255)
     lname = models.CharField(verbose_name="Second name", max_length=255)
     city = models.CharField(max_length=255)
@@ -33,6 +39,16 @@ class Customer(BaseModel):
 
 
 class Account(BaseModel):
+    """
+    Model used to store user account state.
+
+    Relations:
+        - Account must have one related user.
+        - User can have any number of accounts.
+
+    Constraints:
+        - Account balance can't be a negative number.
+    """
     balance = models.DecimalField(
 
         default=0,
@@ -58,6 +74,16 @@ class Account(BaseModel):
 
 
 class Replenishment(BaseModel):
+    """
+    Model used to store replenishment state.
+
+    Relations:
+        - Replenishment must have one related account.
+        - Account can have any number of replenishments.
+
+    Constraints:
+        - Replenishment amount cannot be a negative number.
+    """
     amount = models.DecimalField(
         max_digits=10,
         decimal_places=2
@@ -85,6 +111,17 @@ class Replenishment(BaseModel):
 
 
 class Transfer(BaseModel):
+    """"
+    Model used to store transfer state.
+
+    Relations:
+        - Transfer must have two related accounts.
+        - Account can have any number of transfers.
+
+    Constraints:
+        - Transfer amount cannot be a negative number.
+        - Source and target accounts cannot be the same account.
+    """
     from_account = models.ForeignKey(
         Account,
         on_delete=models.CASCADE,

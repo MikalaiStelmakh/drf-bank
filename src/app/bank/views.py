@@ -40,6 +40,7 @@ class AccountView(viewsets.GenericViewSet,
         serializer.save(user=self.request.user)
 
     def get_queryset(self):
+        # View only accounts owned by logged in user.
         return get_user_accounts(self.request.user)
 
 
@@ -53,6 +54,8 @@ class ReplenishmentView(viewsets.GenericViewSet,
     queryset = Replenishment.objects.all()
 
     def get_queryset(self):
+        # View only replenishments on accounts
+        # owned by logged in user.
         return get_user_replenishments(self.request.user)
 
 
@@ -66,4 +69,6 @@ class TransferView(viewsets.GenericViewSet,
     queryset = Transfer.objects.all()
 
     def get_queryset(self):
+        # View only transfers from or to accounts
+        # owned by logged in user.
         return get_all_user_transfers(self.request.user)
