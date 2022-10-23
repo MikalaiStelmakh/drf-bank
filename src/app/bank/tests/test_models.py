@@ -25,7 +25,9 @@ class ModelTest(TestCase):
             user=user
         )
 
-        self.assertEqual(str(account), f"Account {account.id} of {user.username}")
+        self.assertEqual(
+            str(account), f"Account {account.id} of {user.username}"
+        )
 
     def test_replenishment_str(self):
         user = sample_user()
