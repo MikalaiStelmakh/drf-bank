@@ -87,4 +87,5 @@ class Transfer(models.Model):
         return (
             f'{self.time_transfered}: Transfer '
             f'from account {self.from_account.id} '
-            f'to account {self.to_account.id}')
+            f'to account {self.to_account.id} '
+            f'for {self.amount}')
