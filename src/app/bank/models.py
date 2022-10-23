@@ -2,6 +2,7 @@ from django.utils import timezone
 import uuid
 from django.db import models
 from django.conf import settings
+from django.db.models.query import Q, F
 
 
 class BaseModel(models.Model):
@@ -44,6 +45,14 @@ class Account(BaseModel):
         on_delete=models.PROTECT  # we cannot delete user with money
     )
 
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                name="negative_balance",
+                check=Q(balance__gte=0)
+            )
+        ]
+
     def __str__(self):
         return f'Account {self.id} of {self.user.username}'
 
@@ -59,6 +68,14 @@ class Replenishment(BaseModel):
         on_delete=models.CASCADE,
         related_name="replenishments"
     )
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                name="negative_amount_replenishment",
+                check=Q(amount__gte=0)
+            )
+        ]
 
     def __str__(self):
         return (
@@ -84,6 +101,18 @@ class Transfer(BaseModel):
         max_digits=10,
         decimal_places=2
     )
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                name="negative_amount_transfer",
+                check=Q(amount__gte=0)
+            ),
+            models.CheckConstraint(
+                name="same_account_transfer",
+                check=~Q(from_account__exact=F("to_account"))
+            )
+        ]
 
     def __str__(self):
         return (
