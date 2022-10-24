@@ -1,4 +1,4 @@
-from rest_framework import serializers, exceptions as rest_exceptions
+from rest_framework import serializers
 
 from .models import Customer, Account, Replenishment, Transfer
 
@@ -53,13 +53,6 @@ class ReplenishmentSerializer(serializers.ModelSerializer):
         make_replenishment(**validated_data)
         return super().create(validated_data)
 
-    def validate_amount(self, value):
-        if value <= 0:
-            raise rest_exceptions.ValidationError(
-                "Only positive amount of money can be provided."
-            )
-        return value
-
 
 class TransferSerializer(serializers.ModelSerializer):
     from_account = AccountOwnerForeignKey()
@@ -78,21 +71,3 @@ class TransferSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         make_transfer(**validated_data)
         return super().create(validated_data)
-
-    def validate_amount(self, value):
-        if value <= 0:
-            raise rest_exceptions.ValidationError(
-                "Only positive amount of money can be provided."
-            )
-        return value
-
-    def validate(self, attrs):
-        if attrs['from_account'] == attrs['to_account']:
-            raise rest_exceptions.ValidationError(
-                {"to_account": "Choose another account."}
-            )
-        if attrs['amount'] > attrs['from_account'].balance:
-            raise rest_exceptions.ValidationError(
-                {"amount": "Not enough money."}
-            )
-        return attrs

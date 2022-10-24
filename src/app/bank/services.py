@@ -3,6 +3,7 @@ from users.models import User
 
 from django.db.models.query import QuerySet
 from django.db import transaction
+from django.core.exceptions import ValidationError
 
 
 def get_user_accounts(user: User) -> QuerySet[Account]:
@@ -31,14 +32,48 @@ def get_all_user_transfers(user: User) -> QuerySet[Transfer]:
 
 
 def make_replenishment(account: Account, amount: float):
-    """Replenishes the account with given amount."""
+    """
+    Replenishes the account with given amount.
+
+    Raises:
+        ValidationError:
+            if amount is less or equal to 0.
+    """
+    if amount <= 0:
+        raise ValidationError(
+            {"amount": "Should be a positive number."}
+        )
     with transaction.atomic():
         account.balance += amount
         account.save()
 
 
 def make_transfer(from_account: Account, to_account: Account, amount: float):
-    """Transfers given amount from from_account to to_account."""
+    """
+    Transfers given amount from from_account to to_account.
+
+    Raises:
+        ValidationError:
+            if amount is less or equal to 0.
+        ValidationError:
+            if from_account balance is less than transfered amount.
+        ValidationError:
+            if from_account and to_account are same.
+    """
+    if amount <= 0:
+        raise ValidationError(
+            {"amount": "Should be a positive number."}
+        )
+    if from_account == to_account:
+        raise ValidationError(
+            {"from_account": "Should be different from to_account.",
+             "to_account": "Should be different from from_account."}
+        )
+    if amount > from_account.balance:
+        raise ValidationError(
+            {"amount": "Not enough money."}
+        )
+
     with transaction.atomic():
         from_balance = from_account.balance - amount
         from_account.balance = from_balance
